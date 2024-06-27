@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Scraping</title>
+    <script>
+        async function submitForm(event) {
+            event.preventDefault();
+            const linkInput = document.getElementById('link');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const parcel = linkInput.value;
+
+            // Show loading message
+            loadingMessage.style.display = 'block';
+
+            const response = await fetch('/info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ parcel })
+            });
+
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                const result = await response.json();
+                console.error(result.error);
+                alert('An error occurred: ' + result.error);
+                // Hide loading message
+                loadingMessage.style.display = 'none';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Web Scraping</h1>
+    <form onsubmit="submitForm(event)">
+        <label for="link">Enter a link:</label>
+        <input type="text" id="link" name="link" required>
+        <button type="submit">Submit</button>
+    </form>
+    <p id="loadingMessage" style="display: none;">Loading...</p>
+</body>
+</html>
